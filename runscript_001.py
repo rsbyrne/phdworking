@@ -1,5 +1,5 @@
 import sys
-sys.path.append('..')
+sys.path.append('/workspace/user_data')
 
 from planetengine.frame import make_frame
 from planetengine import initials
@@ -8,15 +8,15 @@ from planetengine import shapes
 from modelscripts import isovisc_systemscript
 from modelscripts import isovisc_observerscript
 
-steps = 0
-res = 1
+steps = 10
+res = 4
 
-outputPath = '..' #'/workspace/user_data/data/tests'
+outputPath = '/workspace/user_data/data/tests/dev'
 
 isovisc1 = make_frame(
     isovisc_systemscript.build(res = 4 * res, Ra = 1e5, aspect = 2),
     isovisc_observerscript.build(),
-    initials = {'temperatureField': {'IC': initials.sinusoidal.IC(freq = 2.)}},
+    initials = {'temperatureField': initials.sinusoidal.IC(freq = 2.)},
     outputPath = outputPath
     )
 
@@ -36,9 +36,7 @@ isovisc1.report()
 isovisc2 = make_frame(
     isovisc_systemscript.build(res = 8 * res, Ra = 1e6, aspect = 2),
     isovisc_observerscript.build(),
-    initials = {'temperatureField': 
-        {'IC': initials.load.IC(isovisc1, 'temperatureField'), 'varBounds': [[0., 1.]]}
-        },
+    initials = {'temperatureField': initials.load.IC(isovisc1, 'temperatureField')},
     outputPath = outputPath
     )
 
@@ -58,9 +56,7 @@ isovisc2.report()
 isovisc3 = make_frame(
     isovisc_systemscript.build(res = 16 * res, Ra = 1e7, aspect = 2),
     isovisc_observerscript.build(),
-    initials = {'temperatureField': 
-        {'IC': initials.load.IC(isovisc2, 'temperatureField'), 'varBounds': [[0., 1., '.', '.']]}
-        },
+    initials = {'temperatureField': initials.load.IC(isovisc2, 'temperatureField')},
     outputPath = outputPath
     )
 
@@ -83,9 +79,7 @@ from modelscripts import MS98_observerscript
 MS98a = make_frame(
     MS98_systemscript.build(res = 16 * res, Ra = 1e7, tau0 = 1e6, aspect = 2),
     MS98_observerscript.build(),
-    initials = {'temperatureField': 
-        {'IC': initials.load.IC(isovisc3, 'temperatureField'), 'varBounds': [[0., 1., '.', '.']]}
-        },
+    initials = {'temperatureField': initials.load.IC(isovisc3, 'temperatureField')},
     outputPath = outputPath
     )
 
@@ -93,11 +87,11 @@ MS98a.report()
 
 checkpointCondition = lambda: any([
     MS98a.status == 'pre-traverse',
-    MS98a.step % 100 == 0,
+    MS98a.step % 1000 == 0,
     MS98a.status == 'post-traverse',
     ])
 collectCondition = lambda: MS98a.step % 10 == 0
-stopCondition = lambda: MS98a.step >= 6 * steps
+stopCondition = lambda: MS98a.step >= steps
 
 MS98a.traverse(stopCondition, collectCondition, checkpointCondition)
 
@@ -106,9 +100,7 @@ MS98a.report()
 MS98b = make_frame(
     MS98_systemscript.build(res = 32 * res, Ra = 1e7, tau0 = 1e6, aspect = 2.),
     MS98_observerscript.build(),
-    initials = {'temperatureField': 
-        {'IC': initials.load.IC(MS98a, 'temperatureField'), 'varBounds': [[0., 1., '.', '.']]}
-        },
+    initials = {'temperatureField': initials.load.IC(MS98a, 'temperatureField')},
     outputPath = outputPath
     )
 
@@ -116,11 +108,11 @@ MS98b.report()
 
 checkpointCondition = lambda: any([
     MS98b.status == 'pre-traverse',
-    MS98b.step % 100 == 0,
+    MS98b.step % 1000 == 0,
     MS98b.status == 'post-traverse',
     ])
 collectCondition = lambda: MS98b.step % 10 == 0
-stopCondition = lambda: MS98b.step >= 6 * steps
+stopCondition = lambda: MS98b.step >= steps
 
 MS98b.traverse(stopCondition, collectCondition, checkpointCondition)
 
@@ -133,8 +125,8 @@ MS98X = make_frame(
     MS98X_systemscript.build(res = 32 * res, Ra = 1e7, tau = 1e6, heating = 0., aspect = 2),
     MS98X_observerscript.build(),
     initials = {
-        'temperatureField': {'IC': initials.load.IC(MS98b, 'temperatureField'), 'varBounds': [[0., 1., '.', '.']]},
-        'materialVar': {'IC': initials.extents.IC((1, shapes.trapezoid(longwidth = 0.3, lengthRatio = 0.9)))}
+        'temperatureField': initials.load.IC(MS98b, 'temperatureField'),
+        'materialVar': initials.extents.IC((1, shapes.trapezoid(longwidth = 0.3, lengthRatio = 0.9)))
         },
     outputPath = outputPath
     )
@@ -147,7 +139,7 @@ checkpointCondition = lambda: any([
     MS98X.status == 'post-traverse',
     ])
 collectCondition = lambda: MS98X.step % 10 == 0
-stopCondition = lambda: MS98X.step >= 30 * steps
+stopCondition = lambda: MS98X.step >= 6 * steps
 
 MS98X.traverse(stopCondition, collectCondition, checkpointCondition)
 
