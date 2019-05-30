@@ -8,8 +8,8 @@ from planetengine import shapes
 from modelscripts import isovisc_systemscript
 from modelscripts import isovisc_observerscript
 
-steps = 10
-res = 4
+steps = 10000
+res = 1
 
 outputPath = '/workspace/user_data/data/tests/dev'
 
@@ -47,7 +47,7 @@ checkpointCondition = lambda: any([
     isovisc2.status == 'post-traverse',
     ])
 collectCondition = lambda: False
-stopCondition = lambda: isovisc2.step >= steps
+stopCondition = lambda: isovisc2.step >= 2 * steps
 
 isovisc2.traverse(stopCondition, collectCondition, checkpointCondition)
 
@@ -67,7 +67,7 @@ checkpointCondition = lambda: any([
     isovisc3.status == 'post-traverse',
     ])
 collectCondition = lambda: False
-stopCondition = lambda: isovisc3.step >= steps
+stopCondition = lambda: isovisc3.step >= 4 * steps
 
 isovisc3.traverse(stopCondition, collectCondition, checkpointCondition)
 
@@ -91,7 +91,7 @@ checkpointCondition = lambda: any([
     MS98a.status == 'post-traverse',
     ])
 collectCondition = lambda: MS98a.step % 10 == 0
-stopCondition = lambda: MS98a.step >= steps
+stopCondition = lambda: MS98a.step >= 6 * steps
 
 MS98a.traverse(stopCondition, collectCondition, checkpointCondition)
 
