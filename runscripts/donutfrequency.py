@@ -30,7 +30,7 @@ for index, job in enumerate(localJobs):
         )
 
     conditions = {
-        'stopCondition': lambda: model.step > 123,
+        'stopCondition': lambda: model.step > 10000,
         'collectCondition': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
