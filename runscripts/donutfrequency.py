@@ -1,6 +1,12 @@
 import sys
 sys.path.append('/workspace/user_data')
 
+import os
+outputDir = '/workspace/user_data/data'
+projName = 'donutfrequency'
+projBranch = 'Jupiter_1906'
+outputPath = os.path.join(outputDir, projName, projBranch)
+
 import planetengine
 import modelscripts
 
@@ -18,13 +24,13 @@ for index, job in enumerate(localJobs):
 
     model = planetengine.frame.make_frame(
         modelscripts.isovisc_systemscript.build(**job, res = 16, aspect = 'max'),
-        modelscripts.isovisc_observerscript.build(),
+        modelscripts.isovisc_observerscript_NOFIGS.build(),
         {'temperatureField': planetengine.initials.sinusoidal.IC(freq = 2., phase = 0.5)},
-        '/workspace/user_data/data/donutfrequency'
+        outputPath
         )
 
     conditions = {
-        'stopCondition': lambda: model.step > 10000,
+        'stopCondition': lambda: model.step > 123,
         'collectCondition': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
@@ -33,8 +39,14 @@ for index, job in enumerate(localJobs):
             ]),
         }
 
-    planetengine.log("Starting chunk no# " + str(chunkno) + " job no# " + str(index) + " params: " + str(sorted(job.items())))
+    planetengine.log(
+        "Starting chunk no# " + str(chunkno) + " job no# " + str(index) + " params: " + str(sorted(job.items())),
+        'logs'
+        )
 
     model.traverse(**conditions)
 
-    planetengine.log("Finishing chunk no# " + str(chunkno) + " job no# " + str(index) + " params: " + str(sorted(job.items())))
+    planetengine.log(
+        "Finishing chunk no# " + str(chunkno) + " job no# " + str(index) + " params: " + str(sorted(job.items())),
+        'logs'
+        )
