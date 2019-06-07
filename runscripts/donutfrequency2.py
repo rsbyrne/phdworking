@@ -15,7 +15,7 @@ chunkno = int(sys.argv[2])
 
 suitelist = planetengine.utilities.suite_list({
     'f': [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-    'Ra': [1e4, 2e4, 8e4, 16e4, 32e4, 64e4, 128e4],
+    'Ra': [4e4],
     }, shuffle = True, chunks = chunks)
 
 localJobs = suitelist[chunkno]

@@ -15,7 +15,7 @@ chunkno = int(sys.argv[2])
 
 suitelist = planetengine.utilities.suite_list({
     'f': [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-    'Ra': [1e4, 2e4, 8e4, 16e4, 32e4, 64e4, 128e4],
+    'Ra': [1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4],
     }, shuffle = True, chunks = chunks)
 
 localJobs = suitelist[chunkno]
@@ -23,14 +23,14 @@ localJobs = suitelist[chunkno]
 for index, job in enumerate(localJobs):
 
     model = planetengine.frame.make_frame(
-        modelscripts.isovisc_systemscript.build(**job, res = 16, aspect = 'max'),
+        modelscripts.isovisc_systemscript.build(**job, res = 64),
         modelscripts.isovisc_observerscript_NOFIGS.build(),
-        {'temperatureField': planetengine.initials.sinusoidal.IC(freq = 2., phase = 0.5)},
+        {'temperatureField': planetengine.initials.sinusoidal.IC(freq = 1.)},
         outputPath
         )
 
     conditions = {
-        'stopCondition': lambda: model.step > 10000,
+        'stopCondition': lambda: model.step > 100000,
         'collectCondition': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
