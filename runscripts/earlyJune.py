@@ -3,8 +3,8 @@ sys.path.append('/workspace/user_data')
 
 import os
 outputDir = '/workspace/user_data/data'
-projName = 'donutfrequency'
-projBranch = 'Jupiter_1906'
+projName = 'isobenchJune'
+projBranch = 'Neptune'
 outputPath = os.path.join(outputDir, projName, projBranch)
 
 import planetengine
@@ -23,7 +23,7 @@ localJobs = suitelist[chunkno]
 for index, job in enumerate(localJobs):
 
     model = planetengine.frame.make_frame(
-        modelscripts.isovisc_systemscript.build(**job, res = 64),
+        modelscripts.isovisc_systemscript.build(**job, res = 16),
         modelscripts.isovisc_observerscript_NOFIGS.build(),
         {'temperatureField': planetengine.initials.sinusoidal.IC(freq = 1.)},
         outputPath
