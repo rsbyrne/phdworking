@@ -2,7 +2,7 @@ import sys
 sys.path.append('/workspace/user_data')
 
 import os
-outputDir = '/workspace/user_data/data'
+outputDir = '/workspace/user_data/data/tests/dev'
 projName = 'isobenchJune'
 projBranch = 'Neptune'
 outputPath = os.path.join(outputDir, projName, projBranch)
@@ -30,7 +30,7 @@ for index, job in enumerate(localJobs):
         )
 
     conditions = {
-        'stopCondition': lambda: model.step > 100000,
+        'stopCondition': lambda: model.step > 1,
         'collectCondition': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
