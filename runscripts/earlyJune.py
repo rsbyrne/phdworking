@@ -5,7 +5,7 @@ test = True
 
 import os
 if not test:
-    outputDir = '/workspace/user_data/data
+    outputDir = '/workspace/user_data/data'
 else:
     outputDir = '/workspace/user_data/data/tests/dev'
 projName = 'isobenchJune'
