@@ -1,8 +1,13 @@
 import sys
 sys.path.append('/workspace/user_data')
 
+test = True
+
 import os
-outputDir = '/workspace/user_data/data/tests/dev'
+if not test:
+    outputDir = '/workspace/user_data/data
+else:
+    outputDir = '/workspace/user_data/data/tests/dev'
 projName = 'isobenchJune'
 projBranch = 'Neptune'
 outputPath = os.path.join(outputDir, projName, projBranch)
@@ -14,8 +19,8 @@ chunks = int(sys.argv[1])
 chunkno = int(sys.argv[2])
 
 suitelist = planetengine.utilities.suite_list({
-    'f': [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-    'Ra': [1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4],
+    'f': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    'Ra': [1e4, 2e4, 4e4, 16e4, 32e4, 64e4, 128e4, 256e4, 512e4, 1024e4],
     }, shuffle = True, chunks = chunks)
 
 localJobs = suitelist[chunkno]
@@ -29,8 +34,13 @@ for index, job in enumerate(localJobs):
         outputPath
         )
 
+    if not test:
+        steps = int(job['Ra'] / 1e4 * 100)
+    else:
+        steps = 10
+
     conditions = {
-        'stopCondition': lambda: model.step > 1,
+        'stopCondition': lambda: model.step > steps,
         'collectCondition': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
