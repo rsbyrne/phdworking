@@ -4,7 +4,7 @@ sys.path.append('/home/jovyan/workspace')
 import os
 outputDir = '/home/jovyan/workspace/data'
 
-projName = 'arrbench'
+projName = 'isobench'
 projBranch = ''
 outputPath = os.path.join(outputDir, projName, projBranch)
 
@@ -17,7 +17,6 @@ chunkno = int(sys.argv[2])
 suitelist = planetengine.utilities.suite_list({
     'f': [x / 10. for x in range(1, 11)],
     'Ra': [10. ** (x / 2.) for x in range(6, 15)],
-    'eta0': [10. ** (x / 2.) for x in range(11)],
     }, shuffle = True, chunks = chunks)
 
 localJobs = suitelist[chunkno]
@@ -30,13 +29,14 @@ planetengine.log(
 for index, job in enumerate(localJobs):
 
     model = planetengine.frame.make_frame(
-        modelscripts.arrhenius.build(**job, res = 64),
+        modelscripts.isovisc.build(**job, res = 64),
         {'temperatureField': planetengine.initials.sinusoidal.IC(freq = 1.)},
         outputPath
         )
 
     conditions = {
         'stopCondition': lambda: model.time > 0.3,
+        'stopCondition': lambda: model.step > 10,
         'collectConditions': lambda: model.step % 10 == 0,
         'checkpointCondition': lambda: any([
             model.status == 'pre-traverse',
